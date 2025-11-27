@@ -20,10 +20,6 @@ const distPath = path.join(__dirname, "../../dist");
 app.use("/assets", express.static(path.join(distPath, "assets")));
 app.use(express.static(distPath));
 
-app.use((req, res, next) => {
-  res.sendFile(path.join(distPath, "index.html"));
-});
-
 const Gemini_Key = process.env.GENERATIVE_AI_KEY;
 const genAI = new GoogleGenerativeAI(Gemini_Key);
 
