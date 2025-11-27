@@ -2,16 +2,26 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 import PDFDocument from "pdfkit";
 import path from "path";
 
 dotenv.config();
-const __dirname = path.resolve();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.urlencoded({ extended: true }));
+
+const distPath = path.join(__dirname, "../../dist");
+app.use(express.static(distPath));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 const Gemini_Key = process.env.GENERATIVE_AI_KEY;
 const genAI = new GoogleGenerativeAI(Gemini_Key);
@@ -79,10 +89,6 @@ app.post("/api/generate-pdf", (req, res) => {
   });
 
   doc.end(); // Finalize the PDF
-});
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 const PORT = process.env.PORT || 3001;
