@@ -17,9 +17,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const distPath = path.join(__dirname, "../../dist");
+app.use("/assets", express.static(path.join(distPath, "assets")));
 app.use(express.static(distPath));
 
-app.get("*", (req, res) => {
+app.use((req, res, next) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
@@ -89,6 +90,10 @@ app.post("/api/generate-pdf", (req, res) => {
   });
 
   doc.end(); // Finalize the PDF
+});
+
+app.use((req, res, next) => {
+  res.sendFile(path.join(distPath, "index.html"));
 });
 
 const PORT = process.env.PORT || 3001;
